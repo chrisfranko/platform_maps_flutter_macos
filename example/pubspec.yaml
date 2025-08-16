@@ -15,11 +15,18 @@ dependencies:
   platform_maps_flutter_macos:
     path: ..
 
+  # Platform interface dependency
+  platform_maps_flutter_platform_interface: ^1.0.0-beta.1
+
   # Your MapKit plugin (adjust the relative path to where it lives)
-  flutter_macos_maps: 
-    git: 
-      url: https://github.com/chrisfranko/flutter_macos_maps.git
-      ref: main
+  flutter_macos_maps: ^0.1.0
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  integration_test:
+    sdk: flutter
+  flutter_lints: ^6.0.0
 
 flutter:
   uses-material-design: true

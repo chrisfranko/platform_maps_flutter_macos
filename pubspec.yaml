@@ -1,7 +1,7 @@
 name: platform_maps_flutter_macos
 description: macOS implementation of platform_maps_flutter using MapKit via flutter_macos_maps.
 version: 0.1.0
-publish_to: "none"
+homepage: https://github.com/chrisfranko/platform_maps_flutter_macos
 environment:
   sdk: ">=3.3.0 <4.0.0"
   flutter: ">=3.22.0"
@@ -18,7 +18,11 @@ dependencies:
   flutter:
     sdk: flutter
   platform_maps_flutter_platform_interface: ^1.0.0-beta.1
-  flutter_macos_maps: 
-    git: 
-      url: https://github.com/chrisfranko/flutter_macos_maps.git
-      ref: main
+  flutter_macos_maps: ^0.1.0
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^3.0.0
+  integration_test:
+    sdk: flutter

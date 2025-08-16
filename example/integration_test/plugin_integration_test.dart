@@ -1,25 +1,26 @@
-// This is a basic Flutter integration test.
-//
-// Since integration tests run in a full Flutter application, they can interact
-// with the host side of a plugin implementation, unlike Dart unit tests.
-//
-// For more information about Flutter integration tests, please see
-// https://flutter.dev/to/integration-testing
-
-
+import 'package:flutter/foundation.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:integration_test/integration_test.dart';
-
 import 'package:platform_maps_flutter_macos/platform_maps_flutter_macos.dart';
+import 'package:platform_maps_flutter_platform_interface/platform_maps_flutter_platform_interface.dart';
 
 void main() {
   IntegrationTestWidgetsFlutterBinding.ensureInitialized();
 
-  testWidgets('getPlatformVersion test', (WidgetTester tester) async {
-    final PlatformMapsFlutterMacos plugin = PlatformMapsFlutterMacos();
-    final String? version = await plugin.getPlatformVersion();
-    // The version string depends on the host platform running the test, so
-    // just assert that some non-empty string is returned.
-    expect(version?.isNotEmpty, true);
+  group('PlatformMapsFlutterMacOS Integration Tests', () {
+    testWidgets('plugin registers correctly', (WidgetTester tester) async {
+      // Only run on macOS
+      if (defaultTargetPlatform == TargetPlatform.macOS) {
+        PlatformMapsFlutterMacOS.registerWith();
+        
+        // Verify the platform instance is correctly set
+        expect(PlatformMapsPlatform.instance, isA<PlatformMapsFlutterMacOS>());
+        
+        // Verify we can create the required components
+        final platform = PlatformMapsPlatform.instance!;
+        expect(platform.createBitmapDescriptor(), isNotNull);
+        expect(platform.createPlatformCameraUpdate(), isNotNull);
+      }
+    });
   });
 }

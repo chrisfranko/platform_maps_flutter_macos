@@ -54,7 +54,7 @@ class _DemoState extends State<Demo> {
     fed.Polygon(
       polygonId: fed.PolygonId('area'),
       strokeColor: Colors.indigo,
-      fillColor: Colors.indigoAccent.withOpacity(.2),
+      fillColor: Colors.indigoAccent.withValues(alpha: 0.2),
       strokeWidth: 2,
       points: const [
         fed.LatLng(37.3360, -122.0180),
@@ -72,7 +72,7 @@ class _DemoState extends State<Demo> {
       radius: 300,
       strokeWidth: 2,
       strokeColor: Colors.green,
-      fillColor: Colors.green.withOpacity(.2),
+      fillColor: Colors.green.withValues(alpha: 0.2),
     )
   };
 
@@ -80,8 +80,7 @@ class _DemoState extends State<Demo> {
   void initState() {
     super.initState();
     // Now that we’ve registered, the instance is non-null.
-    _cam = fed.PlatformMapsPlatform.instance!
-        .createPlatformCameraUpdate();
+    _cam = fed.PlatformMapsPlatform.instance!.createPlatformCameraUpdate();
   }
 
   @override

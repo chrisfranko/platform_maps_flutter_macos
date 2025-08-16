@@ -1,29 +1,39 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:platform_maps_flutter_macos/platform_maps_flutter_macos.dart';
-import 'package:platform_maps_flutter_macos/platform_maps_flutter_macos_platform_interface.dart';
-import 'package:platform_maps_flutter_macos/platform_maps_flutter_macos_method_channel.dart';
-import 'package:plugin_platform_interface/plugin_platform_interface.dart';
-
-class MockPlatformMapsFlutterMacosPlatform
-    with MockPlatformInterfaceMixin
-    implements PlatformMapsFlutterMacosPlatform {
-
-  @override
-  Future<String?> getPlatformVersion() => Future.value('42');
-}
+import 'package:platform_maps_flutter_platform_interface/platform_maps_flutter_platform_interface.dart';
 
 void main() {
-  final PlatformMapsFlutterMacosPlatform initialPlatform = PlatformMapsFlutterMacosPlatform.instance;
+  group('PlatformMapsFlutterMacOS', () {
+    test('registerWith sets the platform instance', () {
+      // Register the macOS implementation
+      PlatformMapsFlutterMacOS.registerWith();
+      
+      // Verify the instance is set
+      expect(PlatformMapsPlatform.instance, isA<PlatformMapsFlutterMacOS>());
+    });
 
-  test('$MethodChannelPlatformMapsFlutterMacos is the default instance', () {
-    expect(initialPlatform, isInstanceOf<MethodChannelPlatformMapsFlutterMacos>());
-  });
+    test('creates bitmap descriptor factory', () {
+      final platform = PlatformMapsFlutterMacOS();
+      final bitmapDescriptor = platform.createBitmapDescriptor();
+      expect(bitmapDescriptor, isNotNull);
+    });
 
-  test('getPlatformVersion', () async {
-    PlatformMapsFlutterMacos platformMapsFlutterMacosPlugin = PlatformMapsFlutterMacos();
-    MockPlatformMapsFlutterMacosPlatform fakePlatform = MockPlatformMapsFlutterMacosPlatform();
-    PlatformMapsFlutterMacosPlatform.instance = fakePlatform;
+    test('creates camera update factory', () {
+      final platform = PlatformMapsFlutterMacOS();
+      final cameraUpdate = platform.createPlatformCameraUpdate();
+      expect(cameraUpdate, isNotNull);
+    });
 
-    expect(await platformMapsFlutterMacosPlugin.getPlatformVersion(), '42');
+    test('creates platform widget', () {
+      final platform = PlatformMapsFlutterMacOS();
+      const params = PlatformMapsPlatformWidgetCreationParams(
+        initialCameraPosition: CameraPosition(
+          target: LatLng(37.7749, -122.4194),
+          zoom: 12.0,
+        ),
+      );
+      final widget = platform.createPlatformMapsPlatformWidget(params);
+      expect(widget, isNotNull);
+    });
   });
 }

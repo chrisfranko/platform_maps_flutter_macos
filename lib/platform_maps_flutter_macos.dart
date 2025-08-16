@@ -4,10 +4,7 @@
 library platform_maps_flutter_macos;
 
 import 'dart:async';
-import 'dart:typed_data';
-import 'dart:ui' show Color;
 import 'package:flutter/foundation.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
 
 import 'package:platform_maps_flutter_platform_interface/platform_maps_flutter_platform_interface.dart';
@@ -20,10 +17,12 @@ class PlatformMapsFlutterMacOS extends PlatformMapsPlatform {
   }
 
   @override
-  PlatformBitmapDescriptor createBitmapDescriptor() => _MacPlatformBitmapDescriptor();
+  PlatformBitmapDescriptor createBitmapDescriptor() =>
+      _MacPlatformBitmapDescriptor();
 
   @override
-  PlatformCameraUpdate createPlatformCameraUpdate() => _MacPlatformCameraUpdate();
+  PlatformCameraUpdate createPlatformCameraUpdate() =>
+      _MacPlatformCameraUpdate();
 
   @override
   PlatformMapsPlatformWidget createPlatformMapsPlatformWidget(
@@ -42,7 +41,7 @@ class _MacOSPlatformWidget extends PlatformMapsPlatformWidget {
 }
 
 class _MacContainer extends StatefulWidget {
-  const _MacContainer(this.params, {super.key});
+  const _MacContainer(this.params);
   final PlatformMapsPlatformWidgetCreationParams params;
 
   @override
@@ -53,10 +52,10 @@ class _MacContainerState extends State<_MacContainer> {
   mac.FlutterMacosMapsController? _c;
 
   // Mirrors of applied state (for diffs)
-  Map<String, Marker> _markers = {};
-  Map<String, Polyline> _polylines = {};
-  Map<String, Polygon> _polygons = {};
-  Map<String, Circle> _circles = {};
+  final Map<String, Marker> _markers = {};
+  final Map<String, Polyline> _polylines = {};
+  final Map<String, Polygon> _polygons = {};
+  final Map<String, Circle> _circles = {};
 
   // Overlay IDs returned by mac plugin (if you expose IDs on add*)
   final Map<String, String> _polylineOverlayIds = {};
@@ -109,8 +108,10 @@ class _MacContainerState extends State<_MacContainer> {
         await _syncCircles(p.circles);
 
         // Events
-        _tapSub = _c!.onTap.listen((pt) => p.onTap?.call(LatLng(pt.lat, pt.lon)));
-        _longSub = _c!.onLongPress.listen((pt) => p.onLongPress?.call(LatLng(pt.lat, pt.lon)));
+        _tapSub =
+            _c!.onTap.listen((pt) => p.onTap?.call(LatLng(pt.lat, pt.lon)));
+        _longSub = _c!.onLongPress
+            .listen((pt) => p.onLongPress?.call(LatLng(pt.lat, pt.lon)));
         _annTapSub = _c!.onAnnotationTap.listen((id) {
           final m = _markers[id];
           m?.onTap?.call();
@@ -168,7 +169,8 @@ class _MacContainerState extends State<_MacContainer> {
     final next = {for (final m in newSet) m.markerId.value: m};
 
     // removals
-    for (final id in _markers.keys.where((k) => !next.containsKey(k)).toList()) {
+    for (final id
+        in _markers.keys.where((k) => !next.containsKey(k)).toList()) {
       await _c!.removeAnnotation(id);
       _markers.remove(id);
     }
@@ -181,16 +183,16 @@ class _MacContainerState extends State<_MacContainer> {
 
       final changed = old == null ||
           old.position != m.position ||
-          (old.infoWindow?.title != m.infoWindow?.title) ||
-          (old.infoWindow?.snippet != m.infoWindow?.snippet);
+          (old.infoWindow.title != m.infoWindow.title) ||
+          (old.infoWindow.snippet != m.infoWindow.snippet);
 
       if (changed) {
         if (old != null) await _c!.removeAnnotation(id);
         await _c!.addAnnotation(
           id: id,
           position: mac.LatLng(m.position.latitude, m.position.longitude),
-          title: m.infoWindow?.title,
-          subtitle: m.infoWindow?.snippet,
+          title: m.infoWindow.title,
+          subtitle: m.infoWindow.snippet,
         );
         _markers[id] = m;
       }
@@ -201,7 +203,8 @@ class _MacContainerState extends State<_MacContainer> {
     if (_c == null) return;
     final next = {for (final p in newSet) p.polylineId.value: p};
 
-    for (final id in _polylines.keys.where((k) => !next.containsKey(k)).toList()) {
+    for (final id
+        in _polylines.keys.where((k) => !next.containsKey(k)).toList()) {
       final overlayId = _polylineOverlayIds.remove(id);
       if (overlayId != null) await _c!.removeOverlay(overlayId);
       _polylines.remove(id);
@@ -217,7 +220,9 @@ class _MacContainerState extends State<_MacContainer> {
         if (existing != null) await _c!.removeOverlay(existing);
 
         final overlayId = await _c!.addPolyline(
-          points: p.points.map((pt) => mac.LatLng(pt.latitude, pt.longitude)).toList(),
+          points: p.points
+              .map((pt) => mac.LatLng(pt.latitude, pt.longitude))
+              .toList(),
           color: _toArgb(p.color),
           width: p.width.toDouble(),
           id: id,
@@ -232,7 +237,8 @@ class _MacContainerState extends State<_MacContainer> {
     if (_c == null) return;
     final next = {for (final p in newSet) p.polygonId.value: p};
 
-    for (final id in _polygons.keys.where((k) => !next.containsKey(k)).toList()) {
+    for (final id
+        in _polygons.keys.where((k) => !next.containsKey(k)).toList()) {
       final overlayId = _polygonOverlayIds.remove(id);
       if (overlayId != null) await _c!.removeOverlay(overlayId);
       _polygons.remove(id);
@@ -248,7 +254,9 @@ class _MacContainerState extends State<_MacContainer> {
         if (existing != null) await _c!.removeOverlay(existing);
 
         final overlayId = await _c!.addPolygon(
-          points: p.points.map((pt) => mac.LatLng(pt.latitude, pt.longitude)).toList(),
+          points: p.points
+              .map((pt) => mac.LatLng(pt.latitude, pt.longitude))
+              .toList(),
           strokeColor: _toArgb(p.strokeColor),
           fillColor: _toArgb(p.fillColor),
           width: p.strokeWidth.toDouble(),
@@ -264,7 +272,8 @@ class _MacContainerState extends State<_MacContainer> {
     if (_c == null) return;
     final next = {for (final c in newSet) c.circleId.value: c};
 
-    for (final id in _circles.keys.where((k) => !next.containsKey(k)).toList()) {
+    for (final id
+        in _circles.keys.where((k) => !next.containsKey(k)).toList()) {
       final overlayId = _circleOverlayIds.remove(id);
       if (overlayId != null) await _c!.removeOverlay(overlayId);
       _circles.remove(id);
@@ -302,12 +311,17 @@ class _MacContainerState extends State<_MacContainer> {
       case MapType.satellite:
         return mac.MapType.satellite;
       case MapType.normal:
-      default:
         return mac.MapType.standard;
     }
   }
 
-  int _toArgb(Color c) => c.value;
+  int _toArgb(Color c) {
+    final r = (c.r * 255.0).round() & 0xff;
+    final g = (c.g * 255.0).round() & 0xff;
+    final b = (c.b * 255.0).round() & 0xff;
+    final a = (c.a * 255.0).round() & 0xff;
+    return r << 16 | g << 8 | b | (a << 24);
+  }
 
   // crude zoom<->span heuristics; tweak for parity
   double _deltaFromZoom(double z) {
@@ -322,7 +336,9 @@ class _MacContainerState extends State<_MacContainer> {
   }
 
   bool _polylineEquals(Polyline a, Polyline b) =>
-      listEquals(a.points, b.points) && a.color == b.color && a.width == b.width;
+      listEquals(a.points, b.points) &&
+      a.color == b.color &&
+      a.width == b.width;
 
   bool _polygonEquals(Polygon a, Polygon b) =>
       listEquals(a.points, b.points) &&
@@ -353,7 +369,8 @@ class _MacController extends PlatformMapsPlatformController {
   Future<void> moveCamera(CameraUpdate cameraUpdate) =>
       _applyCameraUpdate(cameraUpdate, animated: false);
 
-  Future<void> _applyCameraUpdate(CameraUpdate update, {required bool animated}) async {
+  Future<void> _applyCameraUpdate(CameraUpdate update,
+      {required bool animated}) async {
     if (update is! _MacCameraUpdate) {
       // Unknown update (possibly from another implementation) – ignore safely.
       return;
@@ -426,11 +443,13 @@ class _MacController extends PlatformMapsPlatformController {
           _MacCameraUpdateType.zoomBy => base + (update.amount ?? 0.0),
           _MacCameraUpdateType.zoomTo => update.zoom ?? base,
           _ => base,
-        }.clamp(3.0, 20.0);
+        }
+            .clamp(3.0, 20.0);
         _state._lastZoom = newZoom;
         await _c.setCamera(
           mac.CameraPosition(
-            target: mac.LatLng(_state._lastCenter.latitude, _state._lastCenter.longitude),
+            target: mac.LatLng(
+                _state._lastCenter.latitude, _state._lastCenter.longitude),
             latDelta: _state._deltaFromZoom(newZoom),
             lonDelta: _state._deltaFromZoom(newZoom),
           ),
@@ -456,7 +475,8 @@ class _MacController extends PlatformMapsPlatformController {
   Future<bool> isMarkerInfoWindowShown(MarkerId markerId) async => false;
 
   @override
-  Future<Uint8List?> takeSnapshot() async => null; // add real bytes if you expose snapshots
+  Future<Uint8List?> takeSnapshot() async =>
+      null; // add real bytes if you expose snapshots
 }
 
 // ---------------- Platform factories (CameraUpdate & BitmapDescriptor) --------
@@ -521,20 +541,25 @@ class _MacCameraUpdate extends CameraUpdate {
   final double? zoom;
 
   factory _MacCameraUpdate.newCameraPosition(CameraPosition cp) =>
-      _MacCameraUpdate._(_MacCameraUpdateType.newCameraPosition, cameraPosition: cp);
+      _MacCameraUpdate._(_MacCameraUpdateType.newCameraPosition,
+          cameraPosition: cp);
 
   factory _MacCameraUpdate.newLatLng(LatLng t) =>
       _MacCameraUpdate._(_MacCameraUpdateType.newLatLng, target: t);
 
   factory _MacCameraUpdate.newLatLngZoom(LatLng t, double z) =>
-      _MacCameraUpdate._(_MacCameraUpdateType.newLatLngZoom, target: t, zoom: z);
+      _MacCameraUpdate._(_MacCameraUpdateType.newLatLngZoom,
+          target: t, zoom: z);
 
   factory _MacCameraUpdate.newLatLngBounds(LatLngBounds b, double p) =>
-      _MacCameraUpdate._(_MacCameraUpdateType.newLatLngBounds, bounds: b, padding: p);
+      _MacCameraUpdate._(_MacCameraUpdateType.newLatLngBounds,
+          bounds: b, padding: p);
 
-  factory _MacCameraUpdate.zoomIn() => _MacCameraUpdate._(_MacCameraUpdateType.zoomIn);
+  factory _MacCameraUpdate.zoomIn() =>
+      _MacCameraUpdate._(_MacCameraUpdateType.zoomIn);
 
-  factory _MacCameraUpdate.zoomOut() => _MacCameraUpdate._(_MacCameraUpdateType.zoomOut);
+  factory _MacCameraUpdate.zoomOut() =>
+      _MacCameraUpdate._(_MacCameraUpdateType.zoomOut);
 
   factory _MacCameraUpdate.zoomBy(double amount) =>
       _MacCameraUpdate._(_MacCameraUpdateType.zoomBy, amount: amount);
